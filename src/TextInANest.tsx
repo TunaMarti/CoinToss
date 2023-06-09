@@ -13,17 +13,16 @@ import Button from "./components/Button";
 import ArrayButton from "./components/ArrayButton";
 
 const TextInANest = () => {
-  const face = ["yazı", "tura"];
-  const coin = ["yazı", "tura"];
-
+  // const face = ["yazı", "tura"];
+  // const coin = ["yazı", "tura"];
+  const buttons = ["Yazı", "Tura", "Dik", "Yamuk"];
   const [results, setResult] = useState<string[]>([]);
   const [titleText, setTitleText] = useState("Yazı tura için tıklayınız.");
   const [upperTitleText, setUpperTitleText] = useState("");
-  const bodyText = "This is not really a bird nest.";
   const [pressCondition, setPressCond] = useState(false);
   const [resultOfBetText, setResultOfBetText] = useState("");
   const [clickedButtonSaver, setClickedButtonSaver] = useState<number>(-1);
-  const [animation, setAnimation] = useState(new Animated.Value(100));
+  const [animation] = useState(new Animated.Value(100));
 
   const [arraySelected, setArraySelected] = useState("");
 
@@ -32,21 +31,32 @@ const TextInANest = () => {
     setArraySelected(newValue);
   };
 
-  function sayiTut() {
-    const result = face[Math.round(Math.random())];
-    results.push(result);
-  }
+  const sayiTut = (maxValue: number) => {
+    const rand = Math.floor(Math.random() * maxValue);
+    return rand;
+  };
+
+  const sayiTutVeEkle = () => {
+    const random = sayiTut(buttons.length);
+    results.push(buttons[random]);
+  };
 
   function singleToss() {
-    const randomNumber = Math.round(Math.random());
+    // const randomNumber = Math.round(Math.random());
 
-    clickedButtonSaver == randomNumber
-      ? setResultOfBetText(
-          "Sonuç: " + coin[randomNumber] + " Tebrikler kazandınız!"
-        )
-      : setResultOfBetText(
-          "Sonuç: " + coin[randomNumber] + " Bir daha deneyin."
-        );
+    // clickedButtonSaver == randomNumber
+    //   ? setResultOfBetText(
+    //       "Sonuç: " + coin[randomNumber] + " Tebrikler kazandınız!"
+    //     )
+    //   : setResultOfBetText(
+    //       "Sonuç: " + coin[randomNumber] + " Bir daha deneyin."
+    //     );
+    const randomSonuc = buttons[sayiTut(buttons.length)];
+    if (arraySelected == randomSonuc) {
+      setResultOfBetText("Tebrikler... " + randomSonuc + " Kazandı.");
+    } else {
+      setResultOfBetText("Kaybettiniz... " + randomSonuc + " Kazandı.");
+    }
   }
 
   const animate = () => {
@@ -62,7 +72,11 @@ const TextInANest = () => {
 
   const onPressTitle = () => {
     results.length = 0;
-    if (clickedButtonSaver == -1) {
+    // if (clickedButtonSaver == -1) {
+    //   setResultOfBetText("Lütfen bir tahminde bulununuz.");
+    //   return;
+    // }
+    if (!arraySelected || arraySelected == "") {
       setResultOfBetText("Lütfen bir tahminde bulununuz.");
       return;
     }
@@ -71,22 +85,31 @@ const TextInANest = () => {
     setPressCond(true);
 
     setTitleText("Hesaplanıyor...");
+
     for (let index = 0; index < 100; index++) {
-      sayiTut();
+      sayiTutVeEkle();
     }
-    console.log(results.length);
 
     setTimeout(() => {
       singleToss();
       setPressCond(false);
       setTitleText("Yazı tura için tıklayınız.");
-      setUpperTitleText(
-        "TURA ORANI:" +
-          results.filter((x) => x == "tura").length / results.length +
-          "\n" +
-          "YAZI ORANI: " +
-          results.filter((x) => x == "yazı").length / results.length
-      );
+      var aText = "";
+      buttons.forEach((item) => {
+        aText =
+          aText +
+          results.filter((x) => x == item).length / results.length +
+          "\n";
+      });
+      setUpperTitleText(aText);
+
+      // setUpperTitleText(
+      //   "TURA ORANI:" +
+      //     results.filter((x) => x == "tura").length / results.length +
+      //     "\n" +
+      //     "YAZI ORANI: " +
+      //     results.filter((x) => x == "yazı").length / results.length
+      // );
     }, 3000);
   };
 
@@ -99,7 +122,7 @@ const TextInANest = () => {
       <View style={styles.header}>
         <Text style={[styles.title]}>{"Tahmininiz"}</Text>
         <ArrayButton
-          titles={["Yazı", "Tura", "Dik", "Yamuk"]}
+          titles={buttons}
           selectedValue={arraySelected}
           onClick={newButtonClick}
         />
@@ -109,6 +132,7 @@ const TextInANest = () => {
           }}
         />
       </View>
+
       <View style={styles.animated}>
         <Animated.View style={trans}>
           {pressCondition ? (
