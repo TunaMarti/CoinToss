@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
-import Bounce from "./anime";
+import Bounce from "../anime";
 
 type IProps = ComponentProps<typeof View> & {
   _onClick: (i: number) => void;

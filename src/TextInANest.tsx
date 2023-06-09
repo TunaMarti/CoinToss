@@ -1,7 +1,7 @@
 import { useState } from "react";
 import React from "react";
 import { Animated, View, Text, Image, Button, StyleSheet } from "react-native";
-import TailHeadButtons from "./tailHeadButtons";
+import TailHeadButtons from "./components/TailHeadButtons";
 
 const TextInANest = () => {
   const face = ["yazı", "tura"];
@@ -113,7 +113,7 @@ const TextInANest = () => {
           {pressCondition ? (
             <Image
               style={styles.logo}
-              source={require("./assets/coin-flip-38.gif")}
+              source={require("../assets/coin-flip-38.gif")}
             />
           ) : results != null ? (
             <View
