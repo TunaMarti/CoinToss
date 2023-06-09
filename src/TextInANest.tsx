@@ -1,12 +1,22 @@
 import { useState } from "react";
 import React from "react";
-import { Animated, View, Text, Image, Button, StyleSheet } from "react-native";
+import {
+  Animated,
+  View,
+  Text,
+  Image,
+  Button as RButton,
+  StyleSheet,
+} from "react-native";
 import TailHeadButtons from "./components/TailHeadButtons";
+import Button from "./components/Button";
+import ArrayButton from "./components/ArrayButton";
 
 const TextInANest = () => {
   const face = ["yazı", "tura"];
   const coin = ["yazı", "tura"];
-  var results: string[] = [];
+
+  const [results, setResult] = useState<string[]>([]);
   const [titleText, setTitleText] = useState("Yazı tura için tıklayınız.");
   const [upperTitleText, setUpperTitleText] = useState("");
   const bodyText = "This is not really a bird nest.";
@@ -15,25 +25,28 @@ const TextInANest = () => {
   const [clickedButtonSaver, setClickedButtonSaver] = useState<number>(-1);
   const [animation, setAnimation] = useState(new Animated.Value(100));
 
-  function timer() {
-    setTitleText("Hesaplanıyor...");
+  const [arraySelected, setArraySelected] = useState("");
+
+  const newButtonClick = (newValue: string) => {
+    console.log(newValue);
+    setArraySelected(newValue);
+  };
+
+  function sayiTut() {
     const result = face[Math.round(Math.random())];
-    // setTimeout(() => setTitleText(]), 0);
     results.push(result);
   }
 
   function singleToss() {
     const randomNumber = Math.round(Math.random());
-    console.log(clickedButtonSaver);
-    clickedButtonSaver != -1
-      ? clickedButtonSaver == randomNumber
-        ? setResultOfBetText(
-            "Sonuç: " + coin[randomNumber] + " Tebrikler kazandınız!"
-          )
-        : setResultOfBetText(
-            "Sonuç: " + coin[randomNumber] + " Bir daha deneyin."
-          )
-      : setResultOfBetText("Lütfen bir tahminde bulununuz.");
+
+    clickedButtonSaver == randomNumber
+      ? setResultOfBetText(
+          "Sonuç: " + coin[randomNumber] + " Tebrikler kazandınız!"
+        )
+      : setResultOfBetText(
+          "Sonuç: " + coin[randomNumber] + " Bir daha deneyin."
+        );
   }
 
   const animate = () => {
@@ -48,12 +61,21 @@ const TextInANest = () => {
   };
 
   const onPressTitle = () => {
+    results.length = 0;
+    if (clickedButtonSaver == -1) {
+      setResultOfBetText("Lütfen bir tahminde bulununuz.");
+      return;
+    }
     animate();
     setResultOfBetText("");
     setPressCond(true);
+
+    setTitleText("Hesaplanıyor...");
     for (let index = 0; index < 100; index++) {
-      timer();
+      sayiTut();
     }
+    console.log(results.length);
+
     setTimeout(() => {
       singleToss();
       setPressCond(false);
@@ -73,73 +95,38 @@ const TextInANest = () => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          // Try setting `flexDirection` to `"row"`.
-          flexDirection: "column",
-        },
-      ]}
-    >
-      <View
-        style={{
-          flexDirection: "row",
-          flex: 2,
-          backgroundColor: "darkorange",
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: 5,
-        }}
-      >
+    <View style={[styles.container]}>
+      <View style={styles.header}>
         <Text style={[styles.title]}>{"Tahmininiz"}</Text>
+        <ArrayButton
+          titles={["Yazı", "Tura", "Dik", "Yamuk"]}
+          selectedValue={arraySelected}
+          onClick={newButtonClick}
+        />
         <TailHeadButtons
           _onClick={(item) => {
             setClickedButtonSaver(item);
           }}
         />
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          flex: 2,
-          backgroundColor: "darkorange",
-          justifyContent: "center",
-          alignItems: "center",
-          borderRadius: 5,
-        }}
-      >
+      <View style={styles.animated}>
         <Animated.View style={trans}>
           {pressCondition ? (
             <Image
               style={styles.logo}
               source={require("../assets/coin-flip-38.gif")}
             />
-          ) : results != null ? (
-            <View
-              style={{
-                backgroundColor: "rgb(60, 72, 107)",
-                width: 250,
-                height: 125,
-                borderRadius: 20,
-                justifyContent: "center",
-              }}
-            >
+          ) : results.length > 0 ? (
+            <View style={styles.resultView}>
               <Text style={styles.title}>{upperTitleText}</Text>
             </View>
-          ) : null}
+          ) : (
+            <></>
+          )}
         </Animated.View>
       </View>
-      <View
-        style={{
-          flexDirection: "column",
-          flex: 1,
-          backgroundColor: "rgb(240, 240, 240)",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Button
+      <View style={styles.footer}>
+        <RButton
           title={titleText}
           color="rgb(60, 72, 107)"
           onPress={onPressTitle}
@@ -162,7 +149,36 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-
+  header: {
+    flexDirection: "row",
+    flex: 2,
+    backgroundColor: "darkorange",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  footer: {
+    flexDirection: "column",
+    flex: 1,
+    backgroundColor: "rgb(240, 240, 240)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  animated: {
+    flexDirection: "row",
+    flex: 2,
+    backgroundColor: "darkorange",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  resultView: {
+    backgroundColor: "rgb(60, 72, 107)",
+    width: 250,
+    height: 125,
+    borderRadius: 20,
+    justifyContent: "center",
+  },
   logo: {
     width: 200,
     height: 300,
@@ -179,11 +195,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 8,
     fontWeight: "bold",
-  },
-  controlSpace: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    backgroundColor: "#F5F5F5",
   },
 });
 
