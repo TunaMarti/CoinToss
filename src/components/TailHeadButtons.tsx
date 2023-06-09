@@ -1,16 +1,5 @@
 import React, { ComponentProps, useState } from "react";
-import {
-  Animated,
-  Button,
-  Image,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
-import Bounce from "../anime";
+import { Button, StyleSheet, View } from "react-native";
 
 type IProps = ComponentProps<typeof View> & {
   _onClick: (i: number) => void;
